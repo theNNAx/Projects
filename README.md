@@ -26,7 +26,6 @@ O3：纯FP16训练，很不稳定，但是可以作为speed的baseline
 '''
 ```
 
----------------------------------------
 ## 调用 torch.distributed.launch 启动器启动
 ```python
 CUDA_VISIBLE_DEVICES=0,1,2,3 python -m torch.distributed.launch --nproc_per_node=4 main.py
