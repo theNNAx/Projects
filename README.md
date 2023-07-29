@@ -29,7 +29,7 @@ model = convert_syncbn_model(model).cuda()
 
     model, optimizer = amp.initialize(model, optimizer, opt_level='O1')
     model = DistributedDataParallel(model)
-···
+```
 
 
 
