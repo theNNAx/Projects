@@ -4,6 +4,7 @@ Apex 是 NVIDIA 开源的用于混合精度训练和分布式训练库。Apex �
 
 在混合精度训练上，Apex 的封装十分优雅。直接使用 amp.initialize 包装模型和优化器，apex 就会自动帮助我们管理模型参数和优化器的精度了，根据精度需求不同可以传入其他配置参数。
 ```model, optimizer = amp.initialize(model, optimizer, opt_level='O1')```
+
 其中 opt_level 为精度的优化设置，O0（第一个字母是大写字母O）：
 O0：纯FP32训练，可以作为accuracy的baseline；
 O1：混合精度训练（推荐使用），根据黑白名单自动决定使用FP16（GEMM, 卷积）还是FP32（Softmax）进行计算。
