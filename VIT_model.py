@@ -140,7 +140,7 @@ class VisionTransformer(nn.Module):
     # img (3,224,224)
 
 
-def vit_base_patch16_224(num_classes: int = 2):
+def vit_base_patch16_224(num_classes: int = 1000):
     model = VisionTransformer(img_size=224,
                               patch_size=16,
                               depth=8,
