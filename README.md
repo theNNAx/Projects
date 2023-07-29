@@ -1,6 +1,11 @@
 # 实验室4卡训练Vision transformer + tensorboard可视化
 
-# 调用apex库，混合精度加速
+## 调用apex库，混合精度加速
+```python
+from apex import amp
+from apex.parallel import DistributedDataParallel
+from apex.parallel import convert_syncbn_model
+```
 Apex 是 NVIDIA 开源的用于混合精度训练和分布式训练库。Apex 对混合精度训练的过程进行了封装，改两三行配置就可以进行混合精度的训练，从而大幅度降低显存占用，节约运算时间。此外，Apex 也提供了对分布式训练的封装，针对 NVIDIA 的 NCCL 通信库进行了优化。
 
 在混合精度训练上，Apex 的封装十分优雅。直接使用 amp.initialize 包装模型和优化器，apex 就会自动帮助我们管理模型参数和优化器的精度了，根据精度需求不同可以传入其他配置参数。
