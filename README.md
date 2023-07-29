@@ -45,7 +45,7 @@ O2：“几乎FP16”混合精度训练，不存在黑白名单，除了Batch no
 O3：纯FP16训练，很不稳定，但是可以作为speed的baseline
 '''
 ```
-反向传播代码更新
+## 反向传播代码更新
 ```python
 # 反向传播时需要调用 amp.scale_loss，用于根据loss值自动对精度进行缩放
 with amp.scale_loss(loss, optimizer) as scaled_loss:
