@@ -11,7 +11,7 @@ import torch.distributed as dist
 dist.init_process_group(backend='nccl', init_method='env://')
 ```
 
-现有的标准 Batch Normalization 因为使用数据并行（Data Parallel），是单卡的实现模式，只对单个卡上对样本进行归一化，相当于减小了批量大小（batch-size）（详见BN工作原理部分）。对于比较消耗显存的训练任务时，往往单卡上的相对批量过小，影响模型的收敛效果。之前在我们在图像语义分割的实验中，Jerry和我就发现使用大模型的效果反而变差，实际上就是BN在作怪。跨卡同步 Batch Normalization 可以使用全局的样本进行归一化，这样相当于‘增大‘了批量大小，这样训练效果不再受到使用 GPU 数量的影响。最近在图像分割、物体检测的论文中，使用跨卡BN也会显著地提高实验效果，
+现有的标准 Batch Normalization 因为使用数据并行（Data Parallel）, 是单卡的实现模式，只对单个卡上对样本进行归一化，相当于减小了批量大小（batch-size）（详见BN工作原理部分）。对于比较消耗显存的训练任务时，往往单卡上的相对批量过小，影响模型的收敛效果。之前在我们在图像语义分割的实验中，Jerry和我就发现使用大模型的效果反而变差，实际上就是BN在作怪。跨卡同步 Batch Normalization 可以使用全局的样本进行归一化，这样相当于‘增大‘了批量大小，这样训练效果不再受到使用 GPU 数量的影响。最近在图像分割、物体检测的论文中，使用跨卡BN也会显著地提高实验效果。
 ```python
 from apex.parallel import convert_syncbn_model
 model = convert_syncbn_model(model).cuda()
