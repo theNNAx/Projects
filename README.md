@@ -1,4 +1,4 @@
-# 实验室4卡训练Vision transformer(apex库加速) + tensorboard可视化
+# 实验室4卡训练视觉模型(apex库加速) + tensorboard可视化
 > 设备：4张3090， 128G显存， 1T内存
 ## 调用apex库，混合精度加速
 ```python
