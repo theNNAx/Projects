@@ -17,6 +17,20 @@ from apex.parallel import convert_syncbn_model
 model = convert_syncbn_model(model).cuda()
 ```
 
+
+在混合精度训练上，Apex 的封装十分优雅。直接使用 amp.initialize 包装模型和优化器，apex 就会自动帮助我们管理模型参数和优化器的精度了，根据精度需求不同可以传入其他配置参数。
+>
+```python
+model, optimizer = amp.initialize(model, optimizer, opt_level='O1')
+'''
+opt_level 为精度的优化设置，O0（第一个字母是大写字母O）
+O0：纯FP32训练，可以作为accuracy的baseline
+O1：混合精度训练（推荐使用），根据黑白名单自动决定使用FP16（GEMM, 卷积）还是FP32（Softmax）进行计算
+O2：“几乎FP16”混合精度训练，不存在黑白名单，除了Batch norm，几乎都是用FP16计算
+O3：纯FP16训练，很不稳定，但是可以作为speed的baseline
+'''
+
+```
 ### 汇总
 ```python
 
@@ -31,20 +45,6 @@ model = convert_syncbn_model(model).cuda()
     model = DistributedDataParallel(model)
 ```
 
-
-
-在混合精度训练上，Apex 的封装十分优雅。直接使用 amp.initialize 包装模型和优化器，apex 就会自动帮助我们管理模型参数和优化器的精度了，根据精度需求不同可以传入其他配置参数。
->
-```python
-model, optimizer = amp.initialize(model, optimizer, opt_level='O1')
-'''
-opt_level 为精度的优化设置，O0（第一个字母是大写字母O）
-O0：纯FP32训练，可以作为accuracy的baseline
-O1：混合精度训练（推荐使用），根据黑白名单自动决定使用FP16（GEMM, 卷积）还是FP32（Softmax）进行计算
-O2：“几乎FP16”混合精度训练，不存在黑白名单，除了Batch norm，几乎都是用FP16计算
-O3：纯FP16训练，很不稳定，但是可以作为speed的baseline
-'''
-```
 ## 反向传播代码更新
 ```python
 # 反向传播时需要调用 amp.scale_loss，用于根据loss值自动对精度进行缩放
