@@ -1,6 +1,6 @@
 import torch
 
-dict = torch.load("/home/np/Desktop/projects/VIT_self/weights/checkpoint_799.pth", map_location='cuda:0')
+dict = torch.load(".pth", map_location='cuda:0')
 old = []
 for d in dict['model_state_dict']:
     old.append(d)
@@ -35,5 +35,5 @@ def batch_rename_keys(original_dict, key_mapping):
 
 
 updated_dict = batch_rename_keys(dict, key_name_mapping)
-torch.save(updated_dict, '/home/np/Desktop/projects/VIT_self/weights/ud_799.pth')
+torch.save(updated_dict, '.pth')
 
