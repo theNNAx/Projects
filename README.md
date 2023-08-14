@@ -35,14 +35,14 @@ O3：纯FP16训练，很不稳定，但是可以作为speed的baseline
 ```python
 
 
-    model = vit_model(num_classes=args.num_classes)
-    model = convert_syncbn_model(model).cuda()
+model = vit_model(num_classes=args.num_classes)
+model = convert_syncbn_model(model).cuda()
 
-    pg = [p for p in model.parameters() if p.requires_grad]
-    optimizer = optim.SGD(pg, lr=args.lr, momentum=0.9, weight_decay=5E-4)
+pg = [p for p in model.parameters() if p.requires_grad]
+optimizer = optim.SGD(pg, lr=args.lr, momentum=0.9, weight_decay=5E-4)
 
-    model, optimizer = amp.initialize(model, optimizer, opt_level='O1')
-    model = DistributedDataParallel(model)
+model, optimizer = amp.initialize(model, optimizer, opt_level='O1')
+model = DistributedDataParallel(model)
 ```
 
 ## 反向传播代码更新
