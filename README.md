@@ -56,7 +56,7 @@ with amp.scale_loss(loss, optimizer) as scaled_loss:
 
 ## 调用 torch.distributed.launch 启动器启动
 ```python
-CUDA_VISIBLE_DEVICES=0,1,2,3 python -m torch.distributed.launch --nproc_per_node=4 main.py
+python -m torch.distributed.launch --nproc_per_node=4 main.py
 ```
 
 ## 启动tensorboard服务器
