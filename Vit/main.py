@@ -24,7 +24,7 @@ from VIT_model import vit_base_patch16_224 as vit_model
 
 
 def main(args):
-#    os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
+    os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
     tb_writer = SummaryWriter()
     torch.backends.cudnn.benchmark = True
 
