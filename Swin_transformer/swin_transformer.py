@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from droppath import DropPath
-
+from typing import Optional
 
 def window_partition(x, window_size: int):
     pass
@@ -56,8 +56,18 @@ class Mlp(nn.Module):
 class WindowAttention(nn.Module):
     def __init__(self, dim, window_size, num_heads, qkv_bias=True, attn_drop=0., proj_drop=0.):
         super().__init__()
+        self.dim = dim
+        self.window_size = window_size
+        self.num_heads = num_heads
+        head_dim = dim // num_heads
+        self.scale = head_dim ** -0.5
 
-    def forward(self, x):
+
+
+
+
+
+    def forward(self, x, mask: Optional[torch.Tensor] = None):
         pass
 
 
@@ -81,7 +91,7 @@ class SwinTransformerBlock(nn.Module):
         mlp_hidden_dim = int(mlp_ratio * dim)
         self.mlp = Mlp(in_features=dim, hidden_features=mlp_hidden_dim, act_layer=act_layer, drop=drop)
 
-    def forward(self, x):
+    def forward(self, x, attn_mask):
         pass
 
 
@@ -114,6 +124,10 @@ class BasicLayer(nn.Module):
             self.downsample = downsample(dim=dim, norm_layer=norm_layer)
         else:
             self.downsample = None
+
+    def create_mask(self, x, H, W):
+        pass
+
 
     def forward(self, x):
         pass
