@@ -1,14 +1,17 @@
+import sys
+from tqdm import tqdm
 import math
+import torch
 import numpy as np
 import matplotlib.pyplot as plt
 import torch.cuda
 
 #from sklearn.preprocessing import StandardScaler
-import torch
 from torch import nn
 from torchvision.datasets import CIFAR10
-from ResNet50 import *
-from ResNet50 import CyclicLR
+from torch.utils.tensorboard import SummaryWriter
+from ResNet_ import *
+from clr import *
 
 
 def train_net(model, epoch, criterion, optimizer, clr):
@@ -18,16 +21,19 @@ def train_net(model, epoch, criterion, optimizer, clr):
     eval_acces = []
     e = math.ceil(_clr.step_size * 6)
     # clr = _clr
+    tb_writer = SummaryWriter()
 
-    device = torch.device("cuda:0")
+    device = torch.device("cuda:3")
     criterion = criterion.to(device)
     net = model.to(device)
+
     for epochCounter in range(epoch):
         train_loss = 0
         train_acc = 0
         net.train()
 
-        for im, label in train_data:
+        data_loder = tqdm(train_data, file=sys.stdout)
+        for im, label in data_loder:
             im = im.to(device)
             label = label.to(device)
             # 前向传播
@@ -81,27 +87,35 @@ def train_net(model, epoch, criterion, optimizer, clr):
         eval_losses.append(eval_loss / len(test_data))
         eval_acces.append(eval_acc / len(test_data))
         print('epoch: {}, Train Loss: {:.6f}, Train Acc: {:.6f}, Eval Loss: {:.6f}, Eval Acc: {:.6f}'
-              .format(epochCounter + 1, train_loss / len(train_data), train_acc / len(train_data),
+              .format(epochCounter, train_loss / len(train_data), train_acc / len(train_data),
                       eval_loss / len(test_data), eval_acc / len(test_data)))
         print(', Current Lr: {}'.format(lr))
 
+        tags = ["train_loss", "train_acc", "val_loss", "val_acc", "learning_rate"]
+        tb_writer.add_scalar(tags[0], losses[epochCounter], epochCounter)
+        tb_writer.add_scalar(tags[1], acces[epochCounter], epochCounter)
+        tb_writer.add_scalar(tags[2], eval_losses[epochCounter], epochCounter)
+        tb_writer.add_scalar(tags[3], eval_acces[epochCounter], epochCounter)
+        tb_writer.add_scalar(tags[4], optimizer.param_groups[0]["lr"], epochCounter)
+
+    torch.save(model.state_dict(), "./weights/model-{}.pth".format(epoch))
+
 
 if __name__ == '__main__':
-
-    data_path = '../Data/CIFAR-10'
-    train_set = CIFAR10(data_path, train=True, transform=data_tf, download=True)
+    data_path = './datasets'
+    train_set = CIFAR10(data_path, train=True, transform=data_tf, download=False)
     train_data = torch.utils.data.DataLoader(train_set, batch_size=64, shuffle=True)
-    test_set = CIFAR10(data_path, train=False, transform=data_tf, download=True)
+    test_set = CIFAR10(data_path, train=False, transform=data_tf, download=False)
     test_data = torch.utils.data.DataLoader(test_set, batch_size=128, shuffle=False)
 
     resnet50 = ResNet(block_num=[3, 4, 6, 3])
     model = resnet50
     criterion = nn.CrossEntropyLoss()  # 交叉熵损失函数
     optimizer = torch.optim.SGD(model.parameters(), lr=0.01)
-    _clr = CyclicLR(base_lr=0.01, max_lr=0.03, step_size=50, mode='triangular')
+    _clr = CyclicLR(base_lr=0.0001, max_lr=0.0003, step_size=100, mode='triangular2')
 
-    epoch = 200
-    e = math.ceil(_clr.step_size * 6)
+    epoch = 400
+    e = math.ceil(_clr.step_size * 7)
     clr = _clr
     '''
     for i in range(epoch):
@@ -118,4 +132,5 @@ if __name__ == '__main__':
                 lr = optimizer.param_groups[0]['lr'] / 100
                 print(lr)
     '''
+
     train_net(model, epoch=epoch, criterion=criterion, optimizer=optimizer, clr=_clr)
