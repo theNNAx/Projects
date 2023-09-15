@@ -3,6 +3,7 @@ import torch.nn as nn
 from droppath import DropPath
 from typing import Optional
 
+
 def window_partition(x, window_size: int):
     pass
 
@@ -61,8 +62,6 @@ class WindowAttention(nn.Module):
         self.num_heads = num_heads
         head_dim = dim // num_heads
         self.scale = head_dim ** -0.5
-
-
 
 
 
